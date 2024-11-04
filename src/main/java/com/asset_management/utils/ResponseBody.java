@@ -31,6 +31,11 @@ public class ResponseBody<T> {
     private ResponseStatus status;
     private T data;
 
+    public ResponseBody() {
+        this.status = ResponseStatus.builder().code(OK).build();
+        this.data = null;
+    }
+
     public ResponseBody(ResponseStatus status) {
         this.status = status;
     }
@@ -45,7 +50,7 @@ public class ResponseBody<T> {
         this.status = ResponseStatus.builder().code(status.getCode()).errorCode(status.getErrorCode()).errorMessage(status.getErrorMessage()).warningMessage(status.getWarningMessage()).build();
     }
 
-    public ResponseBody(ResponseMessageEnum error){
+    public ResponseBody(ResponseMessageEnum error) {
         this.status = ResponseStatus.builder().code(error.code()).errorCode(error.getStatus().toString()).errorMessage(error.getMessage()).build();
     }
 }

@@ -7,12 +7,12 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ResponseMessageEnum implements IResponseMessageEnum {
     OK("0",HttpStatusEnum.OK,""),
-    UNAUTHORIZED("1000", HttpStatusEnum.UNAUTHORIZED, "Unauthorized!"),
-    INCORRECT_USERNAME_PASSWORD("1001", HttpStatusEnum.BAD_REQUEST, "Incorrect username and password"),
-    INVALID_PARAMETER("1002", HttpStatusEnum.BAD_REQUEST, "Credentials Can't be empty"),
-    BAD_REQUEST("1003", HttpStatusEnum.BAD_REQUEST, "Bad Request"),
-    INTERNAL_SERVER_ERROR("1004", HttpStatusEnum.INTERNAL_SERVER_ERROR, "Something went wrong"),
-    FORBIDDEN("1005", HttpStatusEnum.FORBIDDEN, "Forbidden");
+    UNAUTHORIZED("1000", HttpStatusEnum.UNAUTHORIZED, "You don't permission to access this resource"),
+    BAD_REQUEST("1001", HttpStatusEnum.BAD_REQUEST, "Bad Request"),
+    FORBIDDEN("1002", HttpStatusEnum.FORBIDDEN, "Forbidden"),
+    INTERNAL_SERVER_ERROR("1003", HttpStatusEnum.INTERNAL_SERVER_ERROR, "Something went wrong"),
+    INCORRECT_USERNAME_PASSWORD("1004", HttpStatusEnum.BAD_REQUEST, "Incorrect username and password"),
+    INVALID_PARAMETER("1005", HttpStatusEnum.BAD_REQUEST, "Credentials Can't be empty");
 
 
     private final String code;

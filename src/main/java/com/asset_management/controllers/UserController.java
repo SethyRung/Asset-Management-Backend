@@ -1,7 +1,6 @@
 package com.asset_management.controllers;
 
 import com.asset_management.dto.User.ChangePasswordDTO;
-import com.asset_management.dto.Auth.ResetPasswordDTO;
 import com.asset_management.dto.User.UserResponseDTO;
 import com.asset_management.enums.ResponseMessageEnum;
 import com.asset_management.enums.RoleEnum;

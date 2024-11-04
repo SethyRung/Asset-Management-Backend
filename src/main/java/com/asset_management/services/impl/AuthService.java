@@ -13,6 +13,7 @@ import com.asset_management.repositories.UserRepository;
 import com.asset_management.services.EmailService;
 import com.asset_management.services.IAuthService;
 import com.asset_management.services.JwtService;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -68,14 +69,14 @@ public class AuthService implements IAuthService, LogoutHandler {
 
     @Override
     public AuthResponseDTO login(LoginRequestDTO loginRequestDTO) {
-        try{
+        try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequestDTO.getUsername(),
                             loginRequestDTO.getPassword()
                     )
             );
-        }catch (AuthenticationException e){
+        } catch (AuthenticationException e) {
             throw new ErrorException(HttpStatusEnum.BAD_REQUEST, "Username or Password is invalid.");
         }
         var user = userRepository.findByUsername(loginRequestDTO.getUsername())
@@ -92,22 +93,24 @@ public class AuthService implements IAuthService, LogoutHandler {
     ) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;
-        final String userEmail;
-        if (authHeader == null ||!authHeader.startsWith("Bearer "))
+        if (authHeader == null || !authHeader.startsWith("Bearer "))
             throw new ErrorException(HttpStatusEnum.BAD_REQUEST, "Please provide all parameters.");
 
         refreshToken = authHeader.substring(7);
-        userEmail = jwtService.extractUsername(refreshToken);
-        if(userEmail == null) throw new ErrorException(HttpStatusEnum.BAD_REQUEST, "Token is invalid.");
+        try {
+            final String userEmail = jwtService.extractUsername(refreshToken);
 
-        var user = userRepository.findByUsername(userEmail)
-                .orElseThrow();
-        if (jwtService.isTokenValid(refreshToken, user)) {
+            var user = userRepository.findByUsername(userEmail)
+                    .orElseThrow();
             var accessToken = jwtService.generateToken(user);
             revokeAllUserTokens(user);
             saveUserToken(user, accessToken);
             return new AuthResponseDTO(accessToken, refreshToken);
-        } else throw new ErrorException(HttpStatusEnum.BAD_REQUEST, "Token is already expired.");
+        } catch (ExpiredJwtException e) {
+            throw new ErrorException(HttpStatusEnum.BAD_REQUEST, "Token is already expired");
+        } catch (Exception e) {
+            throw new ErrorException(HttpStatusEnum.BAD_REQUEST, "Token is invalid");
+        }
     }
 
     private void saveUserToken(User user, String jwtToken) {
@@ -140,7 +143,7 @@ public class AuthService implements IAuthService, LogoutHandler {
     ) {
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
-        if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new ErrorException(HttpStatusEnum.BAD_REQUEST, "Something went wrong.");
         }
         jwt = authHeader.substring(7);
@@ -159,13 +162,13 @@ public class AuthService implements IAuthService, LogoutHandler {
         try {
             String resetPasswordId = UUID.randomUUID().toString();
             LocalDateTime currentDateTime = LocalDateTime.now();
-            String resetPasswordUrl = websiteDomain + "/forgot-password?account="+usernameOrEmail+"&resetId="+resetPasswordId;
+            String resetPasswordUrl = websiteDomain + "/forgot-password?account=" + usernameOrEmail + "&resetId=" + resetPasswordId;
 
             user.setResetPasswordId(resetPasswordId);
-            user.setResetPasswordExpireIn(LocalDateTime.of(currentDateTime.getYear(), currentDateTime.getMonth(), currentDateTime.getDayOfMonth(), currentDateTime.getHour(), currentDateTime.getMinute()+15));
+            user.setResetPasswordExpireIn(LocalDateTime.of(currentDateTime.getYear(), currentDateTime.getMonth(), currentDateTime.getDayOfMonth(), currentDateTime.getHour(), currentDateTime.getMinute() + 15));
             userRepository.save(user);
 
-            String from = "Noreply <"+emailDomain+">";
+            String from = "Noreply <" + emailDomain + ">";
             String html = "<!DOCTYPE html>" +
                     "<html lang=\"en\">" +
                     "  <head>" +
@@ -212,11 +215,11 @@ public class AuthService implements IAuthService, LogoutHandler {
                     "  </head>" +
                     "  <body>" +
                     "    <div class=\"container\">" +
-                    "      <h1>Hi "+ user.getFirstName() + ",</h1>" +
+                    "      <h1>Hi " + user.getFirstName() + ",</h1>" +
                     "      <p>You recently requested to reset the password for your account.</p>" +
                     "      <p>Click the button below to proceed.</p>" +
                     "      <p>" +
-                    "        <a href=\""+resetPasswordUrl+"\" class=\"button\">Reset Password</a>" +
+                    "        <a href=\"" + resetPasswordUrl + "\" class=\"button\">Reset Password</a>" +
                     "      </p>" +
                     "      <p>" +
                     "        If you did not request a password reset, please ignore this email. This" +
@@ -224,12 +227,12 @@ public class AuthService implements IAuthService, LogoutHandler {
                     "      </p>" +
                     "      <p class=\"footer\">" +
                     "        Thanks,<br />" +
-                    "        The Angkor Times team" +
+                    "        The SR team" +
                     "      </p>" +
                     "    </div>" +
                     "  </body>" +
                     "</html>";
-            emailService.sendEmail(from, user.getEmail(), "Reset Your Angkor Times Account Password", html);
+            emailService.sendEmail(from, user.getEmail(), "Reset Your Account Password", html);
         } catch (Exception e) {
             throw new ErrorException(HttpStatusEnum.INTERNAL_SERVER_ERROR, "Unable to send the OTP at this time. Please verify your email or try again later.");
         }
@@ -238,9 +241,9 @@ public class AuthService implements IAuthService, LogoutHandler {
     @Override
     public void resetPassword(ResetPasswordDTO resetPasswordDTO) {
         User user = userRepository.findByResetPasswordId(resetPasswordDTO.getResetId()).orElseThrow(() -> new ErrorException(HttpStatusEnum.INTERNAL_SERVER_ERROR, "Reset ID does not exist."));
-        if(!resetPasswordDTO.getNewPassword().equals(resetPasswordDTO.getConfirmPassword()))
+        if (!resetPasswordDTO.getNewPassword().equals(resetPasswordDTO.getConfirmPassword()))
             throw new ErrorException(HttpStatusEnum.BAD_REQUEST, "The confirm password doesn’t match.");
-        if(user.getResetPasswordExpireIn().isBefore(LocalDateTime.now()))
+        if (user.getResetPasswordExpireIn().isBefore(LocalDateTime.now()))
             throw new ErrorException(HttpStatusEnum.BAD_REQUEST, "This link has expired.");
         user.setPassword(passwordEncoder.encode(resetPasswordDTO.getNewPassword()));
         user.setResetPasswordId(null);
