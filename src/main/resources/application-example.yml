@@ -15,6 +15,10 @@ spring:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 application:
   security:
@@ -26,3 +30,5 @@ application:
   smtp:
     api-key: your-key # we used Resend.com is the email API
     domain: your-domain
+  file:
+    upload-dir: your-uploads-directory
