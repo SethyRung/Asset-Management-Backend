@@ -42,5 +42,7 @@ public class Asset {
 
     @Temporal(TemporalType.DATE)
     private Date warrantyExpiryDate;
+
+    private String documents;
 }
 

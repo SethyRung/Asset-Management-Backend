@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,5 +21,5 @@ public class AssetsReqDTO {
     private Long userId;
     private Date acquisitionDate;
     private Date warrantyExpiryDate;
-    private String documents;
+    private List<String> documents;
 }

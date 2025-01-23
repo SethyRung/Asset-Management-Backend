@@ -19,8 +19,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
-import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -89,6 +89,7 @@ public class AssetsService implements IAssetsService {
         asset.setAcquisitionDate(assetsReqDTO.getAcquisitionDate());
         asset.setAssignedTo(user);
         asset.setWarrantyExpiryDate(assetsReqDTO.getWarrantyExpiryDate());
+        asset.setDocuments(String.join(",", assetsReqDTO.getDocuments()));
 
         return assetMapper.toDTO(assetsRepository.save(asset));
     }

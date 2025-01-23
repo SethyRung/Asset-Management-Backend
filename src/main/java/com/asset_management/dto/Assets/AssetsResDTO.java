@@ -5,7 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.util.List;
+
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,4 +22,5 @@ public class AssetsResDTO {
     private String acquisitionDate;
     private Long assignedTo;
     private String warrantyExpiryDate;
+    private List<String> documents;
 }
