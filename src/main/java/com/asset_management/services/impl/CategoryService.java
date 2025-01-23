@@ -1,12 +1,9 @@
 package com.asset_management.services.impl;
 
-import com.asset_management.dto.Assets.AssetsReqDTO;
 import com.asset_management.dto.Category.CategoryReqDTO;
 import com.asset_management.enums.HttpStatusEnum;
 import com.asset_management.exceptions.ErrorException;
-import com.asset_management.models.Asset;
 import com.asset_management.models.Category;
-import com.asset_management.models.User;
 import com.asset_management.repositories.CategoryRepository;
 import com.asset_management.services.ICategoryService;
 import com.asset_management.utils.PaginationPage;

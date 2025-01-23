@@ -25,7 +25,7 @@ public class Asset {
     @Column(unique = true, nullable = false)
     private String serialNumber;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "category_id")
     private Category category;
 
@@ -42,8 +42,5 @@ public class Asset {
 
     @Temporal(TemporalType.DATE)
     private Date warrantyExpiryDate;
-
-    @OneToMany(mappedBy = "asset", cascade = CascadeType.ALL)
-    private List<AssetHistory> assetHistories;
 }
 
