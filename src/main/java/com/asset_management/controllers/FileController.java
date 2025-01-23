@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@Tag(name = "Upload")
+@Tag(name = "File")
 @RestController
 @RequestMapping(value = "/api/files")
 @RequiredArgsConstructor
