@@ -1,9 +1,12 @@
 package com.asset_management.services.impl;
 
+import com.asset_management.dto.Assets.AssetsReqDTO;
 import com.asset_management.dto.Category.CategoryReqDTO;
 import com.asset_management.enums.HttpStatusEnum;
 import com.asset_management.exceptions.ErrorException;
+import com.asset_management.models.Asset;
 import com.asset_management.models.Category;
+import com.asset_management.models.User;
 import com.asset_management.repositories.CategoryRepository;
 import com.asset_management.services.ICategoryService;
 import com.asset_management.utils.PaginationPage;
@@ -21,9 +24,7 @@ public class CategoryService implements ICategoryService {
     @Override
     public Category addCategory(CategoryReqDTO categoryReqDTO) {
         Category category = new Category();
-        category.setName(categoryReqDTO.getName());
-        category.setDescription(categoryReqDTO.getDescription());
-        return categoryRepository.save(category);
+        return saveCategory(category, categoryReqDTO);
     }
 
     @Override
@@ -37,12 +38,7 @@ public class CategoryService implements ICategoryService {
             resultPage = categoryRepository.findByNameContainingIgnoreCase(search, pageable);
         }
 
-        return new PaginationPage<>(
-                resultPage.getContent(),
-                resultPage.getNumber(),
-                resultPage.getSize(),
-                resultPage.getTotalElements(),
-                resultPage.getTotalPages());
+        return new PaginationPage<>(resultPage);
     }
 
     @Override
@@ -53,13 +49,17 @@ public class CategoryService implements ICategoryService {
     @Override
     public Category updateCategory(Long id, CategoryReqDTO categoryReqDTO) {
         Category category = categoryRepository.findById(id).orElseThrow(() -> new ErrorException(HttpStatusEnum.BAD_REQUEST, "Category not found"));
-        category.setName(categoryReqDTO.getName());
-        category.setDescription(categoryReqDTO.getDescription());
-        return categoryRepository.save(category);
+        return saveCategory(category, categoryReqDTO);
     }
 
     @Override
     public void deleteCategory(Long id) {
         categoryRepository.deleteById(id);
+    }
+
+    private Category saveCategory(Category category, CategoryReqDTO categoryReqDTO){
+        category.setName(categoryReqDTO.getName());
+        category.setDescription(categoryReqDTO.getDescription());
+        return categoryRepository.save(category);
     }
 }
