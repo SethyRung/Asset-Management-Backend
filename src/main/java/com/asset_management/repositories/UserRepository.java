@@ -2,6 +2,8 @@ package com.asset_management.repositories;
 
 import com.asset_management.enums.RoleEnum;
 import com.asset_management.models.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,6 +15,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
     Optional<User> findByEmail(String email);
     Optional<User> findByResetPasswordId(String resetId);
+
+    Page<User> findByUsernameContainingIgnoreCase(String search, Pageable pageable);
 
     @Query(
             value = "SELECT * FROM \"user\" u WHERE u.username = :usernameOrEmail OR u.email = :usernameOrEmail",
