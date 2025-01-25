@@ -17,6 +17,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
@@ -141,5 +142,10 @@ public class UserService implements IUserService {
             password.append(characters.charAt(index));
         }
         return password.toString();
+    }
+
+    public User getCurrentUser(){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUsername(username).orElseThrow(()->new ErrorException(HttpStatusEnum.BAD_REQUEST, "User not found with username: " + username));
     }
 }

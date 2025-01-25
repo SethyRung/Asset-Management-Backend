@@ -10,9 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Category")
+@Tag(name = "Categories")
 @RestController
-@RequestMapping(value = "/api/category")
+@RequestMapping(value = "/api/categories")
 @RequiredArgsConstructor
 public class CategoryController {
     private final ICategoryService categoryService;

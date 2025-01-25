@@ -4,7 +4,6 @@ import com.asset_management.dto.User.ChangePasswordDTO;
 import com.asset_management.dto.User.UserReqDTO;
 import com.asset_management.dto.User.UserResDTO;
 import com.asset_management.enums.ResponseMessageEnum;
-import com.asset_management.enums.RoleEnum;
 import com.asset_management.models.User;
 import com.asset_management.services.IUserService;
 import com.asset_management.utils.PaginationPage;
@@ -17,9 +16,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "User")
+@Tag(name = "Users")
 @RestController
-@RequestMapping(value = "/api/user")
+@RequestMapping(value = "/api/users")
 @AllArgsConstructor
 public class UserController {
     private IUserService userService;

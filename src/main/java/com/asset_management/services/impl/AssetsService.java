@@ -2,6 +2,7 @@ package com.asset_management.services.impl;
 
 import com.asset_management.dto.Assets.AssetsReqDTO;
 import com.asset_management.dto.Assets.AssetsResDTO;
+import com.asset_management.dto.AssetsHistory.AssetsHistoryReqDTO;
 import com.asset_management.enums.HttpStatusEnum;
 import com.asset_management.exceptions.ErrorException;
 import com.asset_management.mappers.AssetMapper;
@@ -11,6 +12,7 @@ import com.asset_management.models.User;
 import com.asset_management.repositories.AssetsRepository;
 import com.asset_management.repositories.CategoryRepository;
 import com.asset_management.repositories.UserRepository;
+import com.asset_management.services.IAssetsHistoryService;
 import com.asset_management.services.IAssetsService;
 import com.asset_management.utils.PaginationPage;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.stream.Collectors;
+import java.time.LocalDate;
 
 
 @Service
@@ -29,11 +31,14 @@ public class AssetsService implements IAssetsService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final AssetMapper assetMapper;
+    private final IAssetsHistoryService assetsHistoryService;
 
     @Override
     public AssetsResDTO addAsset(AssetsReqDTO assetsReqDTO) {
-        Asset asset = new Asset();
-        return saveAsset(asset, assetsReqDTO);
+        Asset savedAsset = saveAsset(new Asset(), assetsReqDTO);
+        AssetsHistoryReqDTO assetsHistoryReqDTO = new AssetsHistoryReqDTO(savedAsset.getId(), "Add", "", LocalDate.now());
+        assetsHistoryService.addAssetHistory(assetsHistoryReqDTO);
+        return assetMapper.toDTO(savedAsset);
     }
 
     @Override
@@ -42,9 +47,9 @@ public class AssetsService implements IAssetsService {
         Page<Asset> resultPage;
 
         if (search == null || search.isBlank()) {
-            resultPage = assetsRepository.findAll(pageable);
+            resultPage = assetsRepository.findAllAsset(pageable);
         } else {
-            resultPage = assetsRepository.findByNameContainingIgnoreCase(search, pageable);
+            resultPage = assetsRepository.findByName(search, pageable);
         }
 
         return new PaginationPage<>(resultPage.map(assetMapper::toDTO));
@@ -59,12 +64,19 @@ public class AssetsService implements IAssetsService {
     @Override
     public AssetsResDTO updateAsset(Long id, AssetsReqDTO assetsReqDTO) {
         Asset asset = assetsRepository.findById(id).orElseThrow(() -> new ErrorException(HttpStatusEnum.BAD_REQUEST, "Asset not found"));
-        return saveAsset(asset, assetsReqDTO);
+        Asset savedAsset = saveAsset(asset, assetsReqDTO);
+        AssetsHistoryReqDTO assetsHistoryReqDTO = new AssetsHistoryReqDTO(savedAsset.getId(), "Update", "", LocalDate.now());
+        assetsHistoryService.addAssetHistory(assetsHistoryReqDTO);
+        return assetMapper.toDTO(savedAsset);
     }
 
     @Override
     public void deleteAsset(Long id) {
-        assetsRepository.deleteById(id);
+        Asset asset = assetsRepository.findById(id).orElseThrow(() -> new ErrorException(HttpStatusEnum.BAD_REQUEST, "Asset not found"));
+        asset.setIsDeleted(true);
+        assetsRepository.save(asset);
+        AssetsHistoryReqDTO assetsHistoryReqDTO = new AssetsHistoryReqDTO(asset.getId(), "Delete", "", LocalDate.now());
+        assetsHistoryService.addAssetHistory(assetsHistoryReqDTO);
     }
 
     @Override
@@ -77,9 +89,8 @@ public class AssetsService implements IAssetsService {
         return assetMapper.toDTO(assetsRepository.save(asset));
     }
 
-    private AssetsResDTO saveAsset(Asset asset, AssetsReqDTO assetsReqDTO){
+    private Asset saveAsset(Asset asset, AssetsReqDTO assetsReqDTO){
         Category category = categoryRepository.findById(assetsReqDTO.getCategoryId()).orElseThrow(() -> new ErrorException(HttpStatusEnum.BAD_REQUEST, "Category not found"));
-        User user = userRepository.findById(assetsReqDTO.getUserId()).orElseThrow(() -> new ErrorException(HttpStatusEnum.BAD_REQUEST, "User not found"));
 
         asset.setName(assetsReqDTO.getName());
         asset.setSerialNumber(assetsReqDTO.getSerialNumber());
@@ -87,10 +98,13 @@ public class AssetsService implements IAssetsService {
         asset.setStatus(assetsReqDTO.getStatus());
         asset.setLocation(assetsReqDTO.getLocation());
         asset.setAcquisitionDate(assetsReqDTO.getAcquisitionDate());
-        asset.setAssignedTo(user);
+        if(assetsReqDTO.getUserId() != null){
+            User user = userRepository.findById(assetsReqDTO.getUserId()).orElseThrow(() -> new ErrorException(HttpStatusEnum.BAD_REQUEST, "User not found"));
+            asset.setAssignedTo(user);
+        }
         asset.setWarrantyExpiryDate(assetsReqDTO.getWarrantyExpiryDate());
         asset.setDocuments(String.join(",", assetsReqDTO.getDocuments()));
 
-        return assetMapper.toDTO(assetsRepository.save(asset));
+        return assetsRepository.save(asset);
     }
 }

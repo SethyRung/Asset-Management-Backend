@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Getter
@@ -25,13 +24,15 @@ public class Asset {
     @Column(unique = true, nullable = false)
     private String serialNumber;
 
-    @OneToOne
-    @JoinColumn(name = "category_id")
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
     private String status;  // E.g., Active, In Repair, Retired
 
     private String location;
+
+    private Boolean isDeleted = false;
 
     @Temporal(TemporalType.DATE)
     private Date acquisitionDate;
