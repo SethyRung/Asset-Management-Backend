@@ -46,6 +46,8 @@ public class AuthService implements IAuthService, LogoutHandler {
     private String websiteDomain;
     @Value("${application.smtp.domain}")
     private String emailDomain;
+    @Value("${application.security.jwt.refresh-token.secret-key}")
+    private String refreshSecretKey;
 
     @Override
     public AuthResponseDTO register(RegisterRequestDTO registerRequestDTO) {
@@ -72,15 +74,15 @@ public class AuthService implements IAuthService, LogoutHandler {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            loginRequestDTO.getUsername(),
+                            loginRequestDTO.getEmail(),
                             loginRequestDTO.getPassword()
                     )
             );
         } catch (AuthenticationException e) {
-            throw new ErrorException(HttpStatusEnum.BAD_REQUEST, "Username or Password is invalid.");
+            throw new ErrorException(HttpStatusEnum.BAD_REQUEST, "Email or Password is invalid.");
         }
-        var user = userRepository.findByUsername(loginRequestDTO.getUsername())
-                .orElseThrow(() -> new ErrorException(HttpStatusEnum.BAD_REQUEST, "Username or Password is invalid."));
+        var user = userRepository.findByEmail(loginRequestDTO.getEmail())
+                .orElseThrow(() -> new ErrorException(HttpStatusEnum.BAD_REQUEST, "Email or Password is invalid."));
         var accessToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
@@ -98,7 +100,7 @@ public class AuthService implements IAuthService, LogoutHandler {
 
         refreshToken = authHeader.substring(7);
         try {
-            final String userEmail = jwtService.extractUsername(refreshToken);
+            final String userEmail = jwtService.extractEmail(refreshToken, refreshSecretKey);
 
             var user = userRepository.findByUsername(userEmail)
                     .orElseThrow();
