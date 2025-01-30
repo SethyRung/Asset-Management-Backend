@@ -1,0 +1,39 @@
+spring:
+  port: ${SERVER_PORT}
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+
+application:
+  website-domain: ${APPLICATION_WEBSITE_DOMAIN}
+  security:
+    jwt:
+      access-token:
+        secret-key: ${APPLICATION_SECURITY_JWT_ACCESS_TOKEN_SECRET_KEY}
+        expiration: ${APPLICATION_SECURITY_JWT_ACCESS_TOKEN_EXPIRATION}
+      refresh-token:
+        secret-key: ${APPLICATION_SECURITY_JWT_REFRESH_TOKEN_SECRET_KEY}
+        expiration: ${APPLICATION_SECURITY_JWT_REFRESH_TOKEN_EXPIRATION}
+  smtp:
+    api-key: ${APPLICATION_SMTP_API_KEY}
+    domain: ${APPLICATION_SMTP_DOMAIN}
+  file:
+    upload-dir: uploads
