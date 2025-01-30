@@ -37,8 +37,8 @@ public class UserService implements IUserService {
     private final UserMapper userMapper;
     private final EmailService emailService;
 
-    @Value("${application.website-domain}")
-    private String websiteDomain;
+    @Value("${application.client-url}")
+    private String clientUrl;
     @Value("${application.smtp.domain}")
     private String emailDomain;
 
@@ -83,7 +83,7 @@ public class UserService implements IUserService {
         UserResDTO userResDTO = saveUser(user, userReqDTO);
 
         try {
-            String resetPasswordUrl = websiteDomain + "/reset-password?account=" + userResDTO.getUsername() + "&resetId=" + resetPasswordId;
+            String resetPasswordUrl = clientUrl + "/reset-password?account=" + userResDTO.getUsername() + "&resetId=" + resetPasswordId;
             String from = "Noreply <" + emailDomain + ">";
             ClassPathResource resource = new ClassPathResource("templates/reset-default-password.html");
             String emailContent = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);

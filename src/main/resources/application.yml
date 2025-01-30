@@ -23,7 +23,8 @@ spring:
 
 
 application:
-  website-domain: ${APPLICATION_WEBSITE_DOMAIN}
+  client-url: ${APPLICATION_CLIENT-URL}
+  server-url: ${APPLICATION_SERVER-URL}
   security:
     jwt:
       access-token:

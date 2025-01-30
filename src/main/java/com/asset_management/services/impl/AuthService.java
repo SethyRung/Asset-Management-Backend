@@ -42,8 +42,8 @@ public class AuthService implements IAuthService, LogoutHandler {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
-    @Value("${application.website-domain}")
-    private String websiteDomain;
+    @Value("${application.client-url}")
+    private String clientUrl;
     @Value("${application.smtp.domain}")
     private String emailDomain;
     @Value("${application.security.jwt.refresh-token.secret-key}")
@@ -164,7 +164,7 @@ public class AuthService implements IAuthService, LogoutHandler {
         try {
             String resetPasswordId = UUID.randomUUID().toString();
             LocalDateTime currentDateTime = LocalDateTime.now();
-            String resetPasswordUrl = websiteDomain + "/forgot-password?account=" + usernameOrEmail + "&resetId=" + resetPasswordId;
+            String resetPasswordUrl = clientUrl + "/forgot-password?account=" + usernameOrEmail + "&resetId=" + resetPasswordId;
 
             user.setResetPasswordId(resetPasswordId);
             user.setResetPasswordExpireIn(LocalDateTime.of(currentDateTime.getYear(), currentDateTime.getMonth(), currentDateTime.getDayOfMonth(), currentDateTime.getHour(), currentDateTime.getMinute() + 15));
