@@ -44,7 +44,3 @@ dependencies {
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 	implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 }
-
-tasks.named('test') {
-	useJUnitPlatform()
-}
