@@ -23,13 +23,14 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping(value = "/register")
-    public ResponseEntity<ResponseBody<AuthResponseDTO>> register(@RequestBody RegisterRequestDTO registerRequestDTO){
-        return  ResponseEntity.ok(new ResponseBody<>(authService.register(registerRequestDTO)));
+    public ResponseEntity<ResponseBody<?>> register(@RequestBody RegisterRequestDTO registerRequestDTO){
+        authService.register(registerRequestDTO);
+        return ResponseEntity.ok(new ResponseBody<>());
     }
 
     @PostMapping(value = "/login")
     public ResponseEntity<ResponseBody<AuthResponseDTO>> login(@RequestBody LoginRequestDTO loginRequestDTO){
-        return  ResponseEntity.ok(new ResponseBody<>(authService.login(loginRequestDTO)));
+        return ResponseEntity.ok(new ResponseBody<>(authService.login(loginRequestDTO)));
     }
 
     @PostMapping(value = "/refresh")

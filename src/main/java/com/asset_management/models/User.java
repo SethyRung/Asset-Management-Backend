@@ -34,10 +34,10 @@ public class User implements UserDetails {
     private String resetPasswordId;
     private LocalDateTime resetPasswordExpireIn;
     private LocalDate joinDate;
-    private String profile;
+    private String profile = "";
     private Boolean status;
     @Enumerated(EnumType.STRING)
-    private RoleEnum role;
+    private RoleEnum role = RoleEnum.USER;
 
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;

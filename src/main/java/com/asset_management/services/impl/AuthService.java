@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,7 +28,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -50,23 +53,17 @@ public class AuthService implements IAuthService, LogoutHandler {
     private String refreshSecretKey;
 
     @Override
-    public AuthResponseDTO register(RegisterRequestDTO registerRequestDTO) {
-        var user = User.builder()
+    public void register(RegisterRequestDTO registerRequestDTO) {
+        User user = User.builder()
                 .firstName(registerRequestDTO.getFirstName())
                 .lastName(registerRequestDTO.getLastName())
                 .username(registerRequestDTO.getUsername())
                 .email(registerRequestDTO.getEmail())
                 .password(passwordEncoder.encode(registerRequestDTO.getPassword()))
                 .joinDate(LocalDate.now())
-                .profile(registerRequestDTO.getProfile())
                 .status(true)
-                .role(registerRequestDTO.getRole())
                 .build();
-        var savedUser = userRepository.save(user);
-        var accessToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
-        saveUserToken(savedUser, accessToken);
-        return new AuthResponseDTO(accessToken, refreshToken);
+        userRepository.save(user);
     }
 
     @Override
@@ -164,77 +161,19 @@ public class AuthService implements IAuthService, LogoutHandler {
         try {
             String resetPasswordId = UUID.randomUUID().toString();
             LocalDateTime currentDateTime = LocalDateTime.now();
-            String resetPasswordUrl = clientUrl + "/forgot-password?account=" + usernameOrEmail + "&resetId=" + resetPasswordId;
+            String resetPasswordUrl = clientUrl + "/reset-password?account=" + usernameOrEmail + "&resetId=" + resetPasswordId;
 
             user.setResetPasswordId(resetPasswordId);
             user.setResetPasswordExpireIn(LocalDateTime.of(currentDateTime.getYear(), currentDateTime.getMonth(), currentDateTime.getDayOfMonth(), currentDateTime.getHour(), currentDateTime.getMinute() + 15));
             userRepository.save(user);
 
             String from = "Noreply <" + emailDomain + ">";
-            String html = "<!DOCTYPE html>" +
-                    "<html lang=\"en\">" +
-                    "  <head>" +
-                    "    <meta charset=\"UTF-8\" />" +
-                    "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />" +
-                    "    <title>Password Reset</title>" +
-                    "    <style>" +
-                    "      body {" +
-                    "        font-family: Arial, sans-serif;" +
-                    "        background-color: #f4f4f4;" +
-                    "        margin: 0;" +
-                    "        padding: 20px;" +
-                    "      }" +
-                    "      .container {" +
-                    "        max-width: 600px;" +
-                    "        margin: 0 auto;" +
-                    "        background-color: #fff;" +
-                    "        padding: 20px;" +
-                    "        border-radius: 8px;" +
-                    "        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);" +
-                    "      }" +
-                    "      h1 {" +
-                    "        font-size: 24px;" +
-                    "        color: #333;" +
-                    "      }" +
-                    "      p {" +
-                    "        font-size: 16px;" +
-                    "        color: #555;" +
-                    "      }" +
-                    "      .button {" +
-                    "        display: inline-block;" +
-                    "        padding: 10px 20px;" +
-                    "        background-color: #3f3f46;" +
-                    "        color: #fff !important;" +
-                    "        text-decoration: none;" +
-                    "        border-radius: 5px;" +
-                    "        font-size: 16px;" +
-                    "      }" +
-                    "      .footer {" +
-                    "        margin-top: 20px;" +
-                    "        color: #888;" +
-                    "      }" +
-                    "    </style>" +
-                    "  </head>" +
-                    "  <body>" +
-                    "    <div class=\"container\">" +
-                    "      <h1>Hi " + user.getFirstName() + ",</h1>" +
-                    "      <p>You recently requested to reset the password for your account.</p>" +
-                    "      <p>Click the button below to proceed.</p>" +
-                    "      <p>" +
-                    "        <a href=\"" + resetPasswordUrl + "\" class=\"button\">Reset Password</a>" +
-                    "      </p>" +
-                    "      <p>" +
-                    "        If you did not request a password reset, please ignore this email. This" +
-                    "        password reset link is only valid for the next 15 minutes." +
-                    "      </p>" +
-                    "      <p class=\"footer\">" +
-                    "        Thanks,<br />" +
-                    "        The SR team" +
-                    "      </p>" +
-                    "    </div>" +
-                    "  </body>" +
-                    "</html>";
-            emailService.sendEmail(from, user.getEmail(), "Reset Your Account Password", html);
+            ClassPathResource resource = new ClassPathResource("templates/reset-password.html");
+            String emailContent = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
+
+            emailContent = emailContent.replace("{{firstName}}", user.getFirstName());
+
+            emailService.sendEmail(from, user.getEmail(), "Reset Your Account Password", emailContent);
         } catch (Exception e) {
             throw new ErrorException(HttpStatusEnum.INTERNAL_SERVER_ERROR, "Unable to send the OTP at this time. Please verify your email or try again later.");
         }
