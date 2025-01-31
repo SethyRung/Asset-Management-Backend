@@ -172,6 +172,7 @@ public class AuthService implements IAuthService, LogoutHandler {
             String emailContent = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
 
             emailContent = emailContent.replace("{{firstName}}", user.getFirstName());
+            emailContent = emailContent.replace("{{resetPasswordUrl}}", resetPasswordUrl);
 
             emailService.sendEmail(from, user.getEmail(), "Reset Your Account Password", emailContent);
         } catch (Exception e) {
