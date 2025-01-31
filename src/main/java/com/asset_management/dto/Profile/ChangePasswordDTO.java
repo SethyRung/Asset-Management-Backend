@@ -1,4 +1,4 @@
-package com.asset_management.dto.User;
+package com.asset_management.dto.Profile;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

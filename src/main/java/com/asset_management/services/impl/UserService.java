@@ -1,6 +1,5 @@
 package com.asset_management.services.impl;
 
-import com.asset_management.dto.User.ChangePasswordDTO;
 import com.asset_management.dto.User.UserReqDTO;
 import com.asset_management.dto.User.UserResDTO;
 import com.asset_management.enums.HttpStatusEnum;
@@ -53,18 +52,6 @@ public class UserService implements IUserService {
         }
 
         return new PaginationPage<>(resultPage.map(userMapper::toDTO));
-    }
-
-    @Override
-    public void changePassword(User user, ChangePasswordDTO changePassword) {
-        if (!passwordEncoder.matches(changePassword.getCurrentPassword(), user.getPassword()))
-            throw new ErrorException(HttpStatusEnum.BAD_REQUEST, "Current password is incorrect.");
-        if (!changePassword.getNewPassword().equals(changePassword.getConfirmPassword()))
-            throw new ErrorException(HttpStatusEnum.BAD_REQUEST, "The confirm password doesn't match.");
-        if (passwordEncoder.matches(changePassword.getNewPassword(), user.getPassword()))
-            throw new ErrorException(HttpStatusEnum.BAD_REQUEST, "This password has already been used. Please choose a different one.");
-        user.setPassword(passwordEncoder.encode(changePassword.getNewPassword()));
-        userRepository.save(user);
     }
 
     @Override
@@ -145,7 +132,7 @@ public class UserService implements IUserService {
     }
 
     public User getCurrentUser(){
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByUsername(username).orElseThrow(()->new ErrorException(HttpStatusEnum.BAD_REQUEST, "User not found with username: " + username));
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByEmail(email).orElseThrow(()->new ErrorException(HttpStatusEnum.BAD_REQUEST, "User not found with username: " + email));
     }
 }

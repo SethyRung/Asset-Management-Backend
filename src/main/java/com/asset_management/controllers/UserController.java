@@ -1,20 +1,14 @@
 package com.asset_management.controllers;
 
-import com.asset_management.dto.User.ChangePasswordDTO;
 import com.asset_management.dto.User.UserReqDTO;
 import com.asset_management.dto.User.UserResDTO;
-import com.asset_management.enums.ResponseMessageEnum;
-import com.asset_management.models.User;
 import com.asset_management.services.IUserService;
 import com.asset_management.utils.PaginationPage;
 import com.asset_management.utils.ResponseBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Tag(name = "Users")
 @RestController
@@ -33,12 +27,6 @@ public class UserController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<ResponseBody<UserResDTO>> getUserById(@PathVariable Long id){
         return ResponseEntity.ok(new ResponseBody<>(userService.getUserById(id)));
-    }
-
-    @PostMapping(value = "/change-password")
-    public ResponseEntity<ResponseBody<?>> changePassword(@AuthenticationPrincipal User user, @RequestBody ChangePasswordDTO changePasswordDTO){
-        userService.changePassword(user, changePasswordDTO);
-        return ResponseEntity.ok(new ResponseBody<>(ResponseBody.ResponseStatus.builder().code(ResponseMessageEnum.OK.getCode()).build()));
     }
 
     @PostMapping

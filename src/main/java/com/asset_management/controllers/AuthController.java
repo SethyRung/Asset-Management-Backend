@@ -45,8 +45,8 @@ public class AuthController {
     }
 
     @GetMapping(value = "/reset-password")
-    public ResponseEntity<ResponseBody<?>> getResetPasswordEmail(@RequestParam(name = "usernameOrEmail") String usernameOrEmail){
-        authService.getResetPasswordEmail(usernameOrEmail);
+    public ResponseEntity<ResponseBody<?>> getResetPasswordEmail(@RequestParam(name = "email") String email){
+        authService.getResetPasswordEmail(email);
         return ResponseEntity.ok(new ResponseBody<>(ResponseBody.ResponseStatus.builder().code(ResponseMessageEnum.OK.getCode()).build()));
     }
 

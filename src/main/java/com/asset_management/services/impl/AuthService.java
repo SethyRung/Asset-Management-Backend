@@ -156,7 +156,7 @@ public class AuthService implements IAuthService, LogoutHandler {
 
     @Override
     public void getResetPasswordEmail(String usernameOrEmail) {
-        User user = userRepository.findByUsernameOrEmail(usernameOrEmail).orElseThrow(() -> new ErrorException(HttpStatusEnum.INTERNAL_SERVER_ERROR, "User does not exist."));
+        User user = userRepository.findByEmail(usernameOrEmail).orElseThrow(() -> new ErrorException(HttpStatusEnum.INTERNAL_SERVER_ERROR, "User does not exist."));
 
         try {
             String resetPasswordId = UUID.randomUUID().toString();
