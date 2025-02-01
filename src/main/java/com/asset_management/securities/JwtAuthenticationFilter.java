@@ -1,5 +1,6 @@
 package com.asset_management.securities;
 
+import com.asset_management.enums.HttpStatusEnum;
 import com.asset_management.enums.ResponseMessageEnum;
 import com.asset_management.exceptions.ErrorException;
 import com.asset_management.repositories.TokenRepository;
@@ -78,9 +79,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
-            handlerExceptionResolver.resolveException(request, response, null, new ErrorException(ResponseMessageEnum.UNAUTHORIZED.getStatus(), "Access token is already expired"));
+            handlerExceptionResolver.resolveException(request, response, null, new ErrorException(HttpStatusEnum.UNAUTHORIZED, "Access token is already expired"));
         } catch (UsernameNotFoundException e) {
-            handlerExceptionResolver.resolveException(request, response, null, new ErrorException(ResponseMessageEnum.UNAUTHORIZED.getStatus(), ResponseMessageEnum.UNAUTHORIZED.message()));
+            handlerExceptionResolver.resolveException(request, response, null, new ErrorException(HttpStatusEnum.UNAUTHORIZED, ResponseMessageEnum.UNAUTHORIZED.message()));
         }
     }
 }
