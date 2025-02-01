@@ -54,15 +54,14 @@ public class AuthService implements IAuthService, LogoutHandler {
 
     @Override
     public void register(RegisterRequestDTO registerRequestDTO) {
-        User user = User.builder()
-                .firstName(registerRequestDTO.getFirstName())
-                .lastName(registerRequestDTO.getLastName())
-                .username(registerRequestDTO.getUsername())
-                .email(registerRequestDTO.getEmail())
-                .password(passwordEncoder.encode(registerRequestDTO.getPassword()))
-                .joinDate(LocalDate.now())
-                .status(true)
-                .build();
+        User user = new User();
+        user.setFirstName(registerRequestDTO.getFirstName());
+        user.setLastName(registerRequestDTO.getLastName());
+        user.setUsername(registerRequestDTO.getUsername());
+        user.setEmail(registerRequestDTO.getEmail());
+        user.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword()));
+        user.setJoinDate(LocalDate.now());
+
         userRepository.save(user);
     }
 

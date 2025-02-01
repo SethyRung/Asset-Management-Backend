@@ -2,10 +2,7 @@ package com.asset_management.models;
 
 import com.asset_management.enums.RoleEnum;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -16,8 +13,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "[user]")
-@Data
-@Builder
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class User implements UserDetails {
@@ -35,7 +32,7 @@ public class User implements UserDetails {
     private LocalDateTime resetPasswordExpireIn;
     private LocalDate joinDate;
     private String profile = "";
-    private Boolean status;
+    private Boolean status = true;
     @Enumerated(EnumType.STRING)
     private RoleEnum role = RoleEnum.USER;
 

@@ -4,13 +4,11 @@ import com.asset_management.dto.Profile.ChangePasswordDTO;
 import com.asset_management.dto.Profile.ProfileReqDTO;
 import com.asset_management.dto.User.UserResDTO;
 import com.asset_management.enums.ResponseMessageEnum;
-import com.asset_management.models.User;
 import com.asset_management.services.IProfileService;
 import com.asset_management.utils.ResponseBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Profile")
