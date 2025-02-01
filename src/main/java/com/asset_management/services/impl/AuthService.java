@@ -92,13 +92,13 @@ public class AuthService implements IAuthService, LogoutHandler {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;
         if (authHeader == null || !authHeader.startsWith("Bearer "))
-            throw new ErrorException(HttpStatusEnum.BAD_REQUEST, "Please provide all parameters.");
+            throw new ErrorException(HttpStatusEnum.BAD_REQUEST, "Refresh token is required in the request header.");
 
         refreshToken = authHeader.substring(7);
         try {
             final String userEmail = jwtService.extractEmail(refreshToken, refreshSecretKey);
 
-            var user = userRepository.findByUsername(userEmail)
+            User user = userRepository.findByEmail(userEmail)
                     .orElseThrow();
             var accessToken = jwtService.generateToken(user);
             revokeAllUserTokens(user);
@@ -139,10 +139,10 @@ public class AuthService implements IAuthService, LogoutHandler {
             HttpServletResponse response,
             Authentication authentication
     ) {
-        final String authHeader = request.getHeader("Authorization");
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String jwt;
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new ErrorException(HttpStatusEnum.BAD_REQUEST, "Something went wrong.");
+            throw new ErrorException(HttpStatusEnum.BAD_REQUEST, "Token is required in the request header.");
         }
         jwt = authHeader.substring(7);
         var storedToken = tokenRepository.findByToken(jwt)

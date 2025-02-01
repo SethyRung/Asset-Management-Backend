@@ -67,24 +67,22 @@ public class UserService implements IUserService {
                 currentDateTime.getMonth(), currentDateTime.getDayOfMonth() + 1,
                 currentDateTime.getHour(), currentDateTime.getMinute()));
 
-        UserResDTO userResDTO = saveUser(user, userReqDTO);
-
         try {
-            String resetPasswordUrl = clientUrl + "/reset-password?account=" + userResDTO.getUsername() + "&resetId=" + resetPasswordId;
+            String resetPasswordUrl = clientUrl + "/reset-password?account=" + userReqDTO.getUsername() + "&resetId=" + resetPasswordId;
             String from = "Noreply <" + emailDomain + ">";
             ClassPathResource resource = new ClassPathResource("templates/reset-default-password.html");
             String emailContent = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
 
-            emailContent = emailContent.replace("{{firstName}}", userResDTO.getFirstName());
+            emailContent = emailContent.replace("{{firstName}}", userReqDTO.getFirstName());
             emailContent = emailContent.replace("{{defaultPassword}}", password);
             emailContent = emailContent.replace("{{resetPasswordUrl}}", resetPasswordUrl);
 
-            emailService.sendEmail(from, userResDTO.getEmail(), "Reset Your Account Password", emailContent);
+            emailService.sendEmail(from, userReqDTO.getEmail(), "Reset Your Account Password", emailContent);
         } catch (Exception e) {
             throw new ErrorException(HttpStatusEnum.INTERNAL_SERVER_ERROR, "Unable to send the OTP at this time. Please verify your email or try again later.");
         }
 
-        return userResDTO;
+        return saveUser(user, userReqDTO);
     }
 
     @Override

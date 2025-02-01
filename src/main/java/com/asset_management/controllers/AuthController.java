@@ -33,12 +33,12 @@ public class AuthController {
         return ResponseEntity.ok(new ResponseBody<>(authService.login(loginRequestDTO)));
     }
 
-    @PostMapping(value = "/refresh")
+    @GetMapping(value = "/refresh")
     public ResponseEntity<ResponseBody<AuthResponseDTO>> refresh(HttpServletRequest request){
         return  ResponseEntity.ok(new ResponseBody<>(authService.refreshToken(request)));
     }
 
-    @PostMapping(value = "/logout")
+    @GetMapping(value = "/logout")
     public ResponseEntity<ResponseBody<?>> logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication){
         authService.logout(request, response, authentication);
         return ResponseEntity.ok(new ResponseBody<>(ResponseBody.ResponseStatus.builder().code(ResponseMessageEnum.OK.getCode()).build()));
