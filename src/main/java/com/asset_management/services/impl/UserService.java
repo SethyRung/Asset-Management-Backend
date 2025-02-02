@@ -56,6 +56,14 @@ public class UserService implements IUserService {
 
     @Override
     public UserResDTO addUser(UserReqDTO userReqDTO) {
+
+        // check username or email is already in use
+        if (userRepository.findByUsername(userReqDTO.getUsername()).isPresent()) {
+            throw new ErrorException(HttpStatusEnum.BAD_REQUEST, "This username is already in use. Please use a different one.");
+        } else if (userRepository.findByEmail(userReqDTO.getEmail()).isPresent()) {
+            throw new ErrorException(HttpStatusEnum.BAD_REQUEST, "This email is already in use. Please use a different one.");
+        }
+
         User user = new User();
         String resetPasswordId = UUID.randomUUID().toString();
         String password = generatePassword(8);
@@ -66,7 +74,6 @@ public class UserService implements IUserService {
         user.setResetPasswordExpireIn(LocalDateTime.of(currentDateTime.getYear(),
                 currentDateTime.getMonth(), currentDateTime.getDayOfMonth() + 1,
                 currentDateTime.getHour(), currentDateTime.getMinute()));
-
         try {
             String resetPasswordUrl = clientUrl + "/reset-password?account=" + userReqDTO.getUsername() + "&resetId=" + resetPasswordId;
             String from = "Noreply <" + emailDomain + ">";
@@ -129,8 +136,8 @@ public class UserService implements IUserService {
         return password.toString();
     }
 
-    public User getCurrentUser(){
+    public User getCurrentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByEmail(email).orElseThrow(()->new ErrorException(HttpStatusEnum.BAD_REQUEST, "User not found with username: " + email));
+        return userRepository.findByEmail(email).orElseThrow(() -> new ErrorException(HttpStatusEnum.BAD_REQUEST, "User not found with username: " + email));
     }
 }

@@ -18,4 +18,5 @@ public class UserResDTO {
     private LocalDate joinDate;
     private Boolean status;
     private String role;
+    private String profile;
 }
