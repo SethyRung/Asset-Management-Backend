@@ -1,11 +1,16 @@
 package com.asset_management.services.impl;
 
+import com.asset_management.dto.Assets.AssetItemsResDTO;
 import com.asset_management.dto.Assets.AssetsReqDTO;
 import com.asset_management.dto.Assets.AssetsResDTO;
 import com.asset_management.dto.AssetsHistory.AssetsHistoryReqDTO;
+import com.asset_management.dto.Category.CategoryResDTO;
+import com.asset_management.dto.User.UserResDTO;
 import com.asset_management.enums.HttpStatusEnum;
 import com.asset_management.exceptions.ErrorException;
 import com.asset_management.mappers.AssetMapper;
+import com.asset_management.mappers.CategoryMapper;
+import com.asset_management.mappers.UserMapper;
 import com.asset_management.models.Asset;
 import com.asset_management.models.Category;
 import com.asset_management.models.User;
@@ -22,6 +27,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 
 @Service
@@ -32,6 +38,8 @@ public class AssetsService implements IAssetsService {
     private final UserRepository userRepository;
     private final AssetMapper assetMapper;
     private final IAssetsHistoryService assetsHistoryService;
+    private final CategoryMapper categoryMapper;
+    private final UserMapper userMapper;
 
     @Override
     public AssetsResDTO addAsset(AssetsReqDTO assetsReqDTO) {
@@ -89,6 +97,16 @@ public class AssetsService implements IAssetsService {
         return assetMapper.toDTO(assetsRepository.save(asset));
     }
 
+    @Override
+    public AssetItemsResDTO getItems() {
+        List<Category> categories = categoryRepository.findAllNotDeleted();
+        List<User> users = userRepository.findAllActiveUser();
+
+        List<CategoryResDTO> categoryReqDTOList = categories.stream().map(categoryMapper::toDTO).toList();
+        List<UserResDTO> userResDTOList = users.stream().map(userMapper::toDTO).toList();
+        return new AssetItemsResDTO(categoryReqDTOList, userResDTOList);
+    }
+
     private Asset saveAsset(Asset asset, AssetsReqDTO assetsReqDTO){
         Category category = categoryRepository.findById(assetsReqDTO.getCategoryId()).orElseThrow(() -> new ErrorException(HttpStatusEnum.BAD_REQUEST, "Category not found"));
 
@@ -98,8 +116,8 @@ public class AssetsService implements IAssetsService {
         asset.setStatus(assetsReqDTO.getStatus());
         asset.setLocation(assetsReqDTO.getLocation());
         asset.setAcquisitionDate(assetsReqDTO.getAcquisitionDate());
-        if(assetsReqDTO.getUserId() != null){
-            User user = userRepository.findById(assetsReqDTO.getUserId()).orElseThrow(() -> new ErrorException(HttpStatusEnum.BAD_REQUEST, "User not found"));
+        if(assetsReqDTO.getAssignedTo() != null){
+            User user = userRepository.findById(assetsReqDTO.getAssignedTo()).orElseThrow(() -> new ErrorException(HttpStatusEnum.BAD_REQUEST, "User not found"));
             asset.setAssignedTo(user);
         }
         asset.setWarrantyExpiryDate(assetsReqDTO.getWarrantyExpiryDate());

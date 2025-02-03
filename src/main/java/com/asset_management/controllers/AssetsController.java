@@ -1,5 +1,6 @@
 package com.asset_management.controllers;
 
+import com.asset_management.dto.Assets.AssetItemsResDTO;
 import com.asset_management.dto.Assets.AssetsReqDTO;
 import com.asset_management.dto.Assets.AssetsResDTO;
 import com.asset_management.models.Asset;
@@ -49,5 +50,10 @@ public class AssetsController {
     @PostMapping(value = "/assign")
     public ResponseEntity<ResponseBody<AssetsResDTO>> assignAssetToUser(@RequestParam Long assetId, @RequestParam Long userId){
         return ResponseEntity.ok(new ResponseBody<>(assetsService.assignAssetToUser(assetId, userId)));
+    }
+
+    @GetMapping(value = "/items")
+    public ResponseEntity<ResponseBody<AssetItemsResDTO>> getItems(){
+        return ResponseEntity.ok(new ResponseBody<>(assetsService.getItems()));
     }
 }

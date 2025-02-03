@@ -18,7 +18,7 @@ public class AssetsReqDTO {
     private Long categoryId;
     private String status;  // E.g., Active, In Repair, Retired
     private String location;
-    private Long userId;
+    private Long assignedTo;
     private Date acquisitionDate;
     private Date warrantyExpiryDate;
     private List<String> documents;

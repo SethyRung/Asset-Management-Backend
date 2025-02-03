@@ -32,6 +32,7 @@ public class User implements UserDetails {
     private LocalDateTime resetPasswordExpireIn;
     private LocalDate joinDate;
     private String profile = "";
+    @Column(nullable = false)
     private Boolean status = true;
     @Enumerated(EnumType.STRING)
     private RoleEnum role = RoleEnum.USER;

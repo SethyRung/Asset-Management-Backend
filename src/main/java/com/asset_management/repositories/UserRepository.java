@@ -29,4 +29,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
             nativeQuery = true
     )
     List<User> findAllByRole(@Param("role") String role);
+
+    @Query(
+            value = "SELECT * FROM \"user\" u WHERE u.status = 'TRUE'",
+            nativeQuery = true
+    )
+    List<User> findAllActiveUser();
 }

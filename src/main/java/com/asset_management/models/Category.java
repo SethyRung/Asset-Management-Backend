@@ -19,9 +19,10 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String name;
-
     private String description;
+    @Column(nullable = false)
+    private Boolean isDeleted = false;
 }
 

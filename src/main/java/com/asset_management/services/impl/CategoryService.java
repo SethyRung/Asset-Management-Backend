@@ -1,8 +1,10 @@
 package com.asset_management.services.impl;
 
 import com.asset_management.dto.Category.CategoryReqDTO;
+import com.asset_management.dto.Category.CategoryResDTO;
 import com.asset_management.enums.HttpStatusEnum;
 import com.asset_management.exceptions.ErrorException;
+import com.asset_management.mappers.CategoryMapper;
 import com.asset_management.models.Category;
 import com.asset_management.repositories.CategoryRepository;
 import com.asset_management.services.ICategoryService;
@@ -17,46 +19,50 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CategoryService implements ICategoryService {
     private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
     @Override
-    public Category addCategory(CategoryReqDTO categoryReqDTO) {
+    public CategoryResDTO addCategory(CategoryReqDTO categoryReqDTO) {
         Category category = new Category();
         return saveCategory(category, categoryReqDTO);
     }
 
     @Override
-    public PaginationPage<Category> getAllCategory(String search, int page, int size) {
+    public PaginationPage<CategoryResDTO> getAllCategory(String search, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Category> resultPage;
 
         if (search == null || search.isBlank()) {
-            resultPage = categoryRepository.findAll(pageable);
+            resultPage = categoryRepository.findAllNotDeleted(pageable);
         } else {
             resultPage = categoryRepository.findByNameContainingIgnoreCase(search, pageable);
         }
 
-        return new PaginationPage<>(resultPage);
+        return new PaginationPage<>(resultPage.map(categoryMapper::toDTO));
     }
 
     @Override
-    public Category getCategoryById(Long id) {
-        return categoryRepository.findById(id).orElseThrow(() -> new ErrorException(HttpStatusEnum.BAD_REQUEST, "Category not found"));
+    public CategoryResDTO getCategoryById(Long id) {
+        Category category = categoryRepository.findById(id).orElseThrow(() -> new ErrorException(HttpStatusEnum.BAD_REQUEST, "Category not found"));
+        return categoryMapper.toDTO(category);
     }
 
     @Override
-    public Category updateCategory(Long id, CategoryReqDTO categoryReqDTO) {
+    public CategoryResDTO updateCategory(Long id, CategoryReqDTO categoryReqDTO) {
         Category category = categoryRepository.findById(id).orElseThrow(() -> new ErrorException(HttpStatusEnum.BAD_REQUEST, "Category not found"));
         return saveCategory(category, categoryReqDTO);
     }
 
     @Override
     public void deleteCategory(Long id) {
-        categoryRepository.deleteById(id);
+        Category category = categoryRepository.findById(id).orElseThrow(() -> new ErrorException(HttpStatusEnum.BAD_REQUEST, "Category not found"));
+        category.setIsDeleted(true);
+        categoryRepository.save(category);
     }
 
-    private Category saveCategory(Category category, CategoryReqDTO categoryReqDTO){
+    private CategoryResDTO saveCategory(Category category, CategoryReqDTO categoryReqDTO){
         category.setName(categoryReqDTO.getName());
         category.setDescription(categoryReqDTO.getDescription());
-        return categoryRepository.save(category);
+        return categoryMapper.toDTO(categoryRepository.save(category));
     }
 }
