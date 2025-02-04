@@ -22,4 +22,6 @@ public interface AssetsRepository extends JpaRepository<Asset, Long> {
             nativeQuery = true
     )
     Page<Asset> findByName(@Param("search") String search, Pageable pageable);
+
+    Optional<Asset> findBySerialNumber(String SerialNumber);
 }

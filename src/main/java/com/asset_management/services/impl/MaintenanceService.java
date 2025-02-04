@@ -57,8 +57,8 @@ public class MaintenanceService implements IMaintenanceService {
     }
 
     private Maintenance saveMaintenance(Maintenance maintenance, MaintenanceReqDTO maintenanceReqDTO){
-        User user = userRepository.findById(maintenanceReqDTO.getUserId()).orElseThrow(() -> new ErrorException(HttpStatusEnum.BAD_REQUEST, "User not found"));
-        Asset asset = assetsRepository.findById(maintenanceReqDTO.getAssetId()).orElseThrow(() -> new ErrorException(HttpStatusEnum.BAD_REQUEST, "Asset not found"));
+        User user = userRepository.findById(maintenanceReqDTO.getPerformedBy()).orElseThrow(() -> new ErrorException(HttpStatusEnum.BAD_REQUEST, "User not found"));
+        Asset asset = assetsRepository.findBySerialNumber(maintenanceReqDTO.getSerialNumber()).orElseThrow(() -> new ErrorException(HttpStatusEnum.BAD_REQUEST, "Asset not found"));
 
         maintenance.setAsset(asset);
         maintenance.setMaintenanceDate(maintenanceReqDTO.getMaintenanceDate());

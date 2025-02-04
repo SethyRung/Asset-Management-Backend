@@ -14,9 +14,9 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class MaintenanceReqDTO {
-    private Long assetId;
+    private String serialNumber;
     private LocalDate maintenanceDate;
     private String description;
     private Double cost;
-    private Long userId;
+    private Long performedBy;
 }
