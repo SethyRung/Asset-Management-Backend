@@ -5,14 +5,12 @@ import com.asset_management.dto.Maintenance.MaintenanceReqDTO;
 import com.asset_management.dto.Maintenance.MaintenanceResDTO;
 import com.asset_management.enums.HttpStatusEnum;
 import com.asset_management.exceptions.ErrorException;
-import com.asset_management.mappers.CategoryMapper;
 import com.asset_management.mappers.MaintenanceMapper;
+import com.asset_management.mappers.UserMapper;
 import com.asset_management.models.Asset;
-import com.asset_management.models.Category;
 import com.asset_management.models.Maintenance;
 import com.asset_management.models.User;
 import com.asset_management.repositories.AssetsRepository;
-import com.asset_management.repositories.CategoryRepository;
 import com.asset_management.repositories.MaintenanceRepository;
 import com.asset_management.repositories.UserRepository;
 import com.asset_management.services.IMaintenanceService;
@@ -30,10 +28,9 @@ import java.util.List;
 public class MaintenanceService implements IMaintenanceService {
     private final MaintenanceRepository maintenanceRepository;
     private final UserRepository userRepository;
-    private final CategoryRepository categoryRepository;
     private final AssetsRepository assetsRepository;
     private final MaintenanceMapper maintenanceMapper;
-    private final CategoryMapper categoryMapper;
+    private final UserMapper userMapper;
 
     @Override
     public MaintenanceResDTO addMaintenance(MaintenanceReqDTO maintenanceReqDTO) {
@@ -70,8 +67,8 @@ public class MaintenanceService implements IMaintenanceService {
 
     @Override
     public MaintenanceItemsResDTO getItems() {
-        List<Category> categories = categoryRepository.findAllNotDeleted();
-        return new MaintenanceItemsResDTO(categories.stream().map(categoryMapper::toDTO).toList());
+        List<User> users = userRepository.findAllActiveUser();
+        return new MaintenanceItemsResDTO(users.stream().map(userMapper::toDTO).toList());
     }
 
     private MaintenanceResDTO saveMaintenance(Maintenance maintenance, MaintenanceReqDTO maintenanceReqDTO){
