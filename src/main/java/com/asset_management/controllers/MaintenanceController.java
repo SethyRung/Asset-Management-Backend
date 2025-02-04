@@ -1,6 +1,9 @@
 package com.asset_management.controllers;
 
+import com.asset_management.dto.Assets.AssetItemsResDTO;
+import com.asset_management.dto.Maintenance.MaintenanceItemsResDTO;
 import com.asset_management.dto.Maintenance.MaintenanceReqDTO;
+import com.asset_management.dto.Maintenance.MaintenanceResDTO;
 import com.asset_management.models.Maintenance;
 import com.asset_management.services.IMaintenanceService;
 import com.asset_management.utils.PaginationPage;
@@ -18,24 +21,24 @@ public class MaintenanceController {
     private final IMaintenanceService maintenanceService;
 
     @PostMapping
-    public ResponseEntity<ResponseBody<Maintenance>> addMaintenance(@RequestBody MaintenanceReqDTO maintenanceReqDTO) {
+    public ResponseEntity<ResponseBody<MaintenanceResDTO>> addMaintenance(@RequestBody MaintenanceReqDTO maintenanceReqDTO) {
         return ResponseEntity.ok(new ResponseBody<>(maintenanceService.addMaintenance(maintenanceReqDTO)));
     }
 
     @GetMapping
-    public ResponseEntity<ResponseBody<PaginationPage<Maintenance>>> getAllMaintenance(@RequestParam(required = false) String search,
+    public ResponseEntity<ResponseBody<PaginationPage<MaintenanceResDTO>>> getAllMaintenance(@RequestParam(required = false) String search,
                                                                                  @RequestParam(defaultValue = "0") int page,
                                                                                  @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(new ResponseBody<>(maintenanceService.getAllMaintenance(page, size)));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseBody<Maintenance>> getMaintenanceById(@PathVariable Long id) {
+    public ResponseEntity<ResponseBody<MaintenanceResDTO>> getMaintenanceById(@PathVariable Long id) {
         return ResponseEntity.ok(new ResponseBody<>(maintenanceService.getMaintenanceById(id)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseBody<Maintenance>> updateMaintenance(@PathVariable Long id, @RequestBody MaintenanceReqDTO maintenanceReqDTO) {
+    public ResponseEntity<ResponseBody<MaintenanceResDTO>> updateMaintenance(@PathVariable Long id, @RequestBody MaintenanceReqDTO maintenanceReqDTO) {
         return ResponseEntity.ok(new ResponseBody<>(maintenanceService.updateMaintenance(id, maintenanceReqDTO)));
     }
 
@@ -43,5 +46,10 @@ public class MaintenanceController {
     public ResponseEntity<ResponseBody<?>> deleteMaintenance(@PathVariable Long id) {
         maintenanceService.deleteMaintenance(id);
         return ResponseEntity.ok(new ResponseBody<>());
+    }
+
+    @GetMapping(value = "/items")
+    public ResponseEntity<ResponseBody<MaintenanceItemsResDTO>> getItems(){
+        return ResponseEntity.ok(new ResponseBody<>(maintenanceService.getItems()));
     }
 }
