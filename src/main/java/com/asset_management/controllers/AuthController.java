@@ -23,29 +23,30 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping(value = "/register")
-    public ResponseEntity<ResponseBody<AuthResponseDTO>> register(@RequestBody RegisterRequestDTO registerRequestDTO){
-        return  ResponseEntity.ok(new ResponseBody<>(authService.register(registerRequestDTO)));
+    public ResponseEntity<ResponseBody<?>> register(@RequestBody RegisterRequestDTO registerRequestDTO){
+        authService.register(registerRequestDTO);
+        return ResponseEntity.ok(new ResponseBody<>());
     }
 
     @PostMapping(value = "/login")
     public ResponseEntity<ResponseBody<AuthResponseDTO>> login(@RequestBody LoginRequestDTO loginRequestDTO){
-        return  ResponseEntity.ok(new ResponseBody<>(authService.login(loginRequestDTO)));
+        return ResponseEntity.ok(new ResponseBody<>(authService.login(loginRequestDTO)));
     }
 
-    @PostMapping(value = "/refresh")
+    @GetMapping(value = "/refresh")
     public ResponseEntity<ResponseBody<AuthResponseDTO>> refresh(HttpServletRequest request){
         return  ResponseEntity.ok(new ResponseBody<>(authService.refreshToken(request)));
     }
 
-    @PostMapping(value = "/logout")
+    @GetMapping(value = "/logout")
     public ResponseEntity<ResponseBody<?>> logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication){
         authService.logout(request, response, authentication);
         return ResponseEntity.ok(new ResponseBody<>(ResponseBody.ResponseStatus.builder().code(ResponseMessageEnum.OK.getCode()).build()));
     }
 
     @GetMapping(value = "/reset-password")
-    public ResponseEntity<ResponseBody<?>> getResetPasswordEmail(@RequestParam(name = "usernameOrEmail") String usernameOrEmail){
-        authService.getResetPasswordEmail(usernameOrEmail);
+    public ResponseEntity<ResponseBody<?>> getResetPasswordEmail(@RequestParam(name = "email") String email){
+        authService.getResetPasswordEmail(email);
         return ResponseEntity.ok(new ResponseBody<>(ResponseBody.ResponseStatus.builder().code(ResponseMessageEnum.OK.getCode()).build()));
     }
 

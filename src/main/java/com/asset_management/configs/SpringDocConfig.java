@@ -11,13 +11,13 @@ import io.swagger.v3.oas.annotations.servers.Server;
 @OpenAPIDefinition(
         info = @Info(
                 title = "Asset Management",
-                description = "OpenApi documentation for Asset Management",
+                description = "Api documentation for Asset Management",
                 version = "1.0"
         ),
         servers = {
                 @Server(
                         description = "Local",
-                        url = "http://localhost:8080"
+                        url = "${application.server-url}"
                 ),
         },
         security = {

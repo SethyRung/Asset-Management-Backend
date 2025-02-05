@@ -87,9 +87,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ErrorException.class)
     public ResponseEntity<ResponseBody<?>> handleErrorException (ErrorException ex){
         log.error(ex.getErrorMessage());
+
         ResponseStatus status = ResponseStatus.builder()
-                .code(ResponseMessageEnum.BAD_REQUEST.getCode())
-                .errorCode(ResponseMessageEnum.BAD_REQUEST.getStatus().toString())
+                .code(ex.getHttpStatusEnum().getCode())
+                .errorCode(ex.getHttpStatusEnum().name())
                 .errorMessage(ex.getErrorMessage().isEmpty() ? "Something went wrong" : ex.getErrorMessage())
                 .build();
         return ResponseEntity.ok(new ResponseBody<>(status));
