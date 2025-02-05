@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface AssetsRepository extends JpaRepository<Asset, Long> {
@@ -24,4 +25,16 @@ public interface AssetsRepository extends JpaRepository<Asset, Long> {
     Page<Asset> findByName(@Param("search") String search, Pageable pageable);
 
     Optional<Asset> findBySerialNumber(String SerialNumber);
+
+    @Query(
+            value = "SELECT * FROM \"asset\" a WHERE a.category_id = :categoryId",
+            nativeQuery = true
+    )
+    List<Asset> findAllByCategory(@Param("categoryId") Long categoryId);
+
+    @Query(
+            value = "SELECT * FROM \"asset\" a WHERE a.status = :status",
+            nativeQuery = true
+    )
+    List<Asset> findAllByStatus(@Param("status") String status);
 }
