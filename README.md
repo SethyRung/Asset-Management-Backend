@@ -84,14 +84,14 @@ To get this backend service running on your local machine, follow these steps:
 (Note: Specific endpoints will depend on your implementation. Here are common examples.)
 
 The backend typically exposes RESTful API endpoints at `http://localhost:8080/api/v1/` (or your configured base URL), for example:
-    
-    - `GET /api/v1/assets`: Retrieve all assets.
-    - `GET /api/v1/assets/{id}`: Retrieve a specific asset by ID.
-    - `POST /api/v1/assets`: Create a new asset.
-    - `PUT /api/v1/assets/{id}`: Update an existing asset.
-    - `DELETE /api/v1/assets/{id}`: Delete an asset.
-    - `POST /api/v1/auth/login`: User login.
-    - `POST /api/v1/auth/register`: User registration.
+
+- `GET /api/v1/assets`: Retrieve all assets.
+- `GET /api/v1/assets/{id}`: Retrieve a specific asset by ID.
+- `POST /api/v1/assets`: Create a new asset.
+- `PUT /api/v1/assets/{id}`: Update an existing asset.
+- `DELETE /api/v1/assets/{id}`: Delete an asset.
+- `POST /api/v1/auth/login`: User login.
+- `POST /api/v1/auth/register`: User registration.
 
 Refer to the source code (e.g., controller classes in `src/main/java/.../controller/`) for the exact API specifications.
 
