@@ -1,0 +1,34 @@
+package com.asset_management.auth.model;
+
+import com.asset_management.user.model.User;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class Token {
+
+    @Id
+    @GeneratedValue
+    public Long id;
+
+    @Column(unique = true)
+    public String token;
+
+    @Builder.Default
+    public String tokenType = "BEARER";
+
+    public boolean revoked;
+
+    public boolean expired;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    public User user;
+}

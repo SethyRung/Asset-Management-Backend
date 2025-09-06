@@ -1,8 +1,8 @@
 package com.asset_management.configs;
 
-import com.asset_management.repositories.UserRepository;
+import com.asset_management.auth.service.CustomUserDetailsService;
 import com.asset_management.securities.ApplicationAuditAware;
-import com.asset_management.services.impl.CustomUserDetailsService;
+import com.asset_management.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
