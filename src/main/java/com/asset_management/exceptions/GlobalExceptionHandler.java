@@ -31,8 +31,7 @@ public class GlobalExceptionHandler {
         log.error(ex.getMessage());
         ResponseStatus status = ResponseStatus.builder()
                 .code(ResponseMessageEnum.BAD_REQUEST.getCode())
-                .errorCode(ResponseMessageEnum.BAD_REQUEST.getStatus().toString())
-                .errorMessage("Required parameter is not present")
+                .message("Required parameter is not present")
                 .build();
         return ResponseEntity.ok(new ResponseBody<>(status));
     }
@@ -42,8 +41,7 @@ public class GlobalExceptionHandler {
         log.error(ex.getMessage(), ex);
         ResponseStatus status = ResponseStatus.builder()
                 .code(ResponseMessageEnum.BAD_REQUEST.getCode())
-                .errorCode(ResponseMessageEnum.BAD_REQUEST.getStatus().toString())
-                .errorMessage("Required Request Body is not present")
+                .message("Required Request Body is not present")
                 .build();
         return ResponseEntity.ok(new ResponseBody<>(status));
     }
@@ -53,8 +51,7 @@ public class GlobalExceptionHandler {
         log.error(ex.getMessage());
         ResponseStatus status = ResponseStatus.builder()
                 .code(ResponseMessageEnum.INTERNAL_SERVER_ERROR.getCode())
-                .errorCode(ResponseMessageEnum.INTERNAL_SERVER_ERROR.getStatus().toString())
-                .errorMessage(ResponseMessageEnum.INTERNAL_SERVER_ERROR.getMessage())
+                .message(ResponseMessageEnum.INTERNAL_SERVER_ERROR.getMessage())
                 .build();
         return ResponseEntity.ok(new ResponseBody<>(status));
     }
@@ -72,8 +69,7 @@ public class GlobalExceptionHandler {
         log.error(ex.getMessage());
         ResponseStatus status = ResponseStatus.builder()
                 .code(ResponseMessageEnum.BAD_REQUEST.getCode())
-                .errorCode(ResponseMessageEnum.BAD_REQUEST.getStatus().toString())
-                .errorMessage(ResponseMessageEnum.BAD_REQUEST.getMessage())
+                .message(ResponseMessageEnum.BAD_REQUEST.getMessage())
                 .build();
         return ResponseEntity.ok(new ResponseBody<>(status, errorFields));
     }
@@ -90,8 +86,7 @@ public class GlobalExceptionHandler {
 
         ResponseStatus status = ResponseStatus.builder()
                 .code(ex.getHttpStatusEnum().getCode())
-                .errorCode(ex.getHttpStatusEnum().name())
-                .errorMessage(ex.getErrorMessage().isEmpty() ? "Something went wrong" : ex.getErrorMessage())
+                .message(ex.getErrorMessage().isEmpty() ? "Something went wrong" : ex.getErrorMessage())
                 .build();
         return ResponseEntity.ok(new ResponseBody<>(status));
     }
