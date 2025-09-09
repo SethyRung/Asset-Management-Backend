@@ -1,146 +1,223 @@
 # Asset Management - Backend ⚙️
----
 
 ## Overview 🌟
 
-This repository contains the backend for the Asset Management System. It serves as the core API service, handling data storage, business logic, and providing the necessary endpoints for the frontend application. Built with Java, it ensures robust and scalable asset management operations.
+This repository contains the **backend service** for the Asset Management System.
+It powers the system’s core APIs, manages data persistence, enforces business logic, and integrates authentication & authorization.
+
+Built with **Spring Boot** and **PostgreSQL**, it ensures scalable and secure asset management operations.
 
 ## Frontend Integration 🌐
 
-This backend service is designed to work seamlessly with its corresponding frontend application:
+This backend works with the following frontend application:
 
-- Frontend Repository: https://github.com/SethyRung/Asset-Management-Frontend
-- Live Demo: https://asset-management-sethyrung.vercel.app/
+* **Frontend Repository**: [Asset-Management-Frontend](https://github.com/SethyRung/Asset-Management-Frontend)
+* **Live Demo**: [https://asset-management-sethyrung.vercel.app/](https://asset-management-sethyrung.vercel.app/)
+
+---
 
 ## Features ✨
 
-This backend provides the foundational functionalities for an asset management system, typically including:
+* **RESTful APIs** for assets, users, and authentication
+* **PostgreSQL persistence** (with Dockerized database)
+* **Authentication & Authorization** with JWT
+* **Email & file upload support** (via environment configuration)
+* **Docker & Docker Compose** for easy local setup and deployment
+* **Gradle build system** with build caching
 
-- **RESTful API Endpoints**: Exposes APIs for managing assets, users, and other related entities.
-- **Data Persistence**: Manages data storage, likely using a database (e.g., PostgreSQL, MySQL, H2 for development).
-- **Business Logic**: Implements core business rules for asset tracking, updates, and more.
-- **Authentication & Authorization (Potential)**: Secure access to API endpoints.
-- **Scalability**: Designed to handle a growing number of assets and users.
+---
 
-## Technologies Used 🛠️
+## Technologies 🛠️
 
-This backend project is primarily built with:
+* **Java 21** (via Eclipse Temurin)
+* **Spring Boot 3**
+* **Gradle**
+* **PostgreSQL**
+* **Docker & Docker Compose**
 
-- **Java**: The core programming language for the server-side application.
-- **Spring Boot (Likely)**: Given the Java and Gradle setup, Spring Boot is a strong candidate for building robust and easy-to-deploy applications.
-- **Gradle**: The build automation tool for managing dependencies and building the project.
-- **Docker & Docker Compose**: For containerization, enabling easy setup and deployment across different environments.
-- **Database (Likely)**: A relational database for data storage (e.g., H2 for embedded/development, PostgreSQL/MySQL for production).
+---
 
-## Installation & Setup 🚀
+## Getting Started 🚀
 
-To get this backend service running on your local machine, follow these steps:
+### 1. Prerequisites
 
-1. Prerequisites:
+* [Docker & Docker Compose](https://docs.docker.com/get-docker/)
+* Java 21 (only needed for native builds)
+* Gradle (optional, project includes `gradlew`)
 
-    - Java Development Kit (JDK): Ensure you have JDK 11 or newer installed.
-    - Docker & Docker Compose: Install Docker Desktop (includes Docker Compose) for containerized setup.
-    - Editor/IDE: An IDE like IntelliJ IDEA or VS Code (with Java extensions) is recommended.
+---
 
-2. Clone the Repository:
+### 2. Clone the Repository
 
-    `git clone https://https://github.com/SethyRung/Asset-Management-Backend.git`
+```bash
+git clone https://github.com/SethyRung/Asset-Management-Backend.git
+cd Asset-Management-Backend
+```
 
-3. Navigate to Project Directory:
+---
 
-    `cd Asset-Management-Backend`
+### 3. Setup Environment Variables
 
-4. Environment Variables:
+Copy the example env file and adjust values as needed:
 
-    - Copy the `.env-example` file to `.env` and configure any necessary environment variables, such as database connection strings or API keys.
-        
-        ```bash
-        cp .env-example .env
-        # Open .env and adjust variables, e.g.:
-        # DATABASE_URL=jdbc:h2:mem:assetdb
-        # DATABASE_USERNAME=sa
-        # DATABASE_PASSWORD=
-        ```
+```bash
+cp .env-example .env
+```
 
-5. Build and Run with Docker Compose (Recommended) 🐳:
+Example important variables:
 
-    - This is the easiest way to run the application along with its dependencies (e.g., database).
-        
-        `docker-compose up --build`
+```ini
+# PostgreSQL
+POSTGRES_DB=asset_management
+POSTGRES_USER=admin
+POSTGRES_PASSWORD=supersecret
+```
 
-        This command will build the Docker image for the backend and start all services defined in docker-compose.yml. The API should be accessible at http://localhost:8080 (or the port configured in application.properties/application.yml).
+---
 
-6. Build and Run Natively (Alternative) 🖥️:
+### 4. Run with Docker Compose 🐳 (Recommended)
 
-    - If you prefer not to use Docker, you can build and run the Spring Boot application directly:
-        
-        ```bash
-        ./gradlew clean build
-        java -jar build/libs/asset-management-backend-0.0.1-SNAPSHOT.jar # Adjust version as needed
-        ```
+Build and start all services (backend + PostgreSQL):
+
+```bash
+docker-compose up --build
+```
+
+* Backend API: [http://localhost:8080](http://localhost:8080)
+* PostgreSQL DB: `localhost:5432` (inside Docker network use `postgres-db:5432`)
+
+To run in background:
+
+```bash
+docker-compose up -d
+```
+
+Stop containers:
+
+```bash
+docker-compose down
+```
+
+---
+
+### 5. Native Development Setup (Optional) 🖥️
+
+If you prefer running locally without Docker:
+
+```bash
+# Build the project
+./gradlew clean build
+
+# Run the JAR
+java -jar build/libs/asset-management-backend-0.0.1-SNAPSHOT.jar
+```
+
+Make sure you have PostgreSQL running locally and update `.env`.
+
+---
+
+## Development Workflow 🔄 (Hot Reloading with Docker)
+
+When developing, you don’t want to rebuild the Docker image every time you change code.
+Instead, you can use `spring-boot-devtools` + **volume mounting** for hot reloading.
+
+### 1. Enable Devtools
+
+Add `spring-boot-devtools` as a dependency in your `build.gradle`:
+
+```gradle
+dependencies {
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+}
+```
+
+---
+
+### 2. Create `docker-compose.override.yml`
+
+This file overrides the default setup for local development:
+
+```yaml
+version: "1.0.0"
+
+services:
+  backend:
+    volumes:
+      - ./src:/app/src        # Mount source code
+      - ./build:/app/build    # Mount build folder
+    command: ./gradlew bootRun --no-daemon
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+```
+
+---
+
+### 3. Run in Dev Mode
+
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.override.yml up --build
+```
+
+* The backend will now start with `bootRun`.
+* Any Java class changes will trigger **auto-restart**.
+* Resource changes (like `.properties` files) reload without restarting.
+
+---
 
 ## API Endpoints 🔌
 
-(Note: Specific endpoints will depend on your implementation. Here are common examples.)
+The API is served at `http://localhost:8080/api/`
 
-The backend typically exposes RESTful API endpoints at `http://localhost:8080/api/v1/` (or your configured base URL), for example:
+Examples:
 
-- `GET /api/v1/assets`: Retrieve all assets.
-- `GET /api/v1/assets/{id}`: Retrieve a specific asset by ID.
-- `POST /api/v1/assets`: Create a new asset.
-- `PUT /api/v1/assets/{id}`: Update an existing asset.
-- `DELETE /api/v1/assets/{id}`: Delete an asset.
-- `POST /api/v1/auth/login`: User login.
-- `POST /api/v1/auth/register`: User registration.
+* `POST /api/auth/register` → Register a new user
+* `POST /api/auth/login` → Login and receive JWT
+* `GET /api/assets` → List all assets
+* `POST /api/assets` → Create a new asset
+* `PUT /api/assets/{id}` → Update an asset
+* `DELETE /api/assets/{id}` → Remove an asset
 
-Refer to the source code (e.g., controller classes in `src/main/java/.../controller/`) for the exact API specifications.
+---
 
 ## Project Structure 📁
 
-The project follows a standard Spring Boot/Gradle structure:
-
-```bash
-Asset-Management-Backend/
-├── gradle/                 # Gradle wrapper files
-├── src/                    # Source code
-│   ├── main/
-│   │   ├── java/           # Java source files
-│   │   │   └── com/
-│   │   │       └── asset_management/
-│   │   │           ├── AssetManagementBackendApplication.java # Main application file
-│   │   │           ├── controller/       # REST API controllers
-│   │   │           ├── service/          # Business logic services
-│   │   │           ├── repository/       # Data access layer (e.g., Spring Data JPA)
-│   │   │           └── model/            # Data models/entities
-│   │   └── resources/      # Application resources (properties, templates)
-│   │       ├── application.properties  # Spring Boot configuration
-│   │       └── ...
-│   └── test/               # Test code
-├── .env-example            # Example environment variables
-├── .gitignore              # Files/folders to ignore in Git
-├── Dockerfile              # Docker image definition
-├── build.gradle            # Gradle build configuration
-├── docker-compose.yml      # Docker Compose configuration
-├── gradlew                 # Gradle wrapper script (Linux/macOS)
-├── gradlew.bat             # Gradle wrapper script (Windows)
-├── settings.gradle         # Gradle settings file
-└── README.md               # This file
 ```
+Asset-Management-Backend/
+├── src/main/java/com/asset_management/
+│   ├── AssetManagementBackendApplication.java  # Main entry point
+│   ├── controller/   # REST Controllers
+│   ├── service/      # Business logic
+│   ├── repository/   # Data access (Spring Data JPA)
+│   └── model/        # Entities
+├── src/main/resources/
+│   └── application.properties
+├── Dockerfile
+├── docker-compose.yml
+├── docker-compose.override.yml   # Development overrides (optional)
+├── .env-example
+├── build.gradle
+└── README.md
+```
+
+---
 
 ## Contributing 🤝
 
-Contributions are welcome! If you'd like to contribute, please follow these steps:
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feature/new-feature`)
+3. Commit changes (`git commit -m "Add new feature"`)
+4. Push branch (`git push origin feature/new-feature`)
+5. Open a Pull Request
 
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature/your-feature-name`).
-3. Make your changes and commit them (`git commit -m 'Add new feature'`).
-4. Push to the branch (`git push origin feature/your-feature-name`).
-5. Create a Pull Request.
+---
 
-## License
+## License 📜
 
-This project is licensed under the MIT License.
+This project is licensed under the [MIT License](LICENSE).
 
-## Contact
+---
 
-For any inquiries or suggestions, you can reach out to [Sethy Rung](https://github.com/SethyRung) via GitHub.
+## Contact 📬
+
+* **Author**: [Sethy Rung](https://github.com/SethyRung)
+* For questions or suggestions, feel free to open an issue or reach out via GitHub.
