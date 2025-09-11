@@ -1,6 +1,6 @@
 package com.asset_management.securities;
 
-import com.asset_management.models.User;
+import com.asset_management.user.model.User;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;

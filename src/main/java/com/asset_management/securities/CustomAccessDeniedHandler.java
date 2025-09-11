@@ -24,6 +24,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     }
 
     private String createErrorBody(AccessDeniedException accessDeniedException){
-        return new Gson().toJson(new ResponseBody<>(ResponseBody.ResponseStatus.builder().code(ResponseMessageEnum.UNAUTHORIZED.code()).errorMessage(ResponseMessageEnum.UNAUTHORIZED.message()).build()));
+        return new Gson().toJson(new ResponseBody<>(ResponseBody.ResponseStatus.builder().code(ResponseMessageEnum.UNAUTHORIZED.code()).message(ResponseMessageEnum.UNAUTHORIZED.message()).build()));
     }
 }

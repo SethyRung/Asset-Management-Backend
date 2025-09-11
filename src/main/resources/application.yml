@@ -21,7 +21,6 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
-
 application:
   client-url: ${APP_CLIENT_URL}
   server-url: ${APP_SERVER_URL}

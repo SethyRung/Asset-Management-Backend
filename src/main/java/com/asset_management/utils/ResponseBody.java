@@ -19,9 +19,7 @@ public class ResponseBody<T> {
     @NoArgsConstructor
     public static class ResponseStatus {
         private String code;
-        private String errorCode;
-        private String errorMessage;
-        private String warningMessage;
+        private String message;
         @Builder.Default
         private String requestId = UUID.randomUUID().toString();
         @Builder.Default
@@ -47,10 +45,10 @@ public class ResponseBody<T> {
 
     public ResponseBody(ResponseStatus status, T data) {
         this.data = data;
-        this.status = ResponseStatus.builder().code(status.getCode()).errorCode(status.getErrorCode()).errorMessage(status.getErrorMessage()).warningMessage(status.getWarningMessage()).build();
+        this.status = ResponseStatus.builder().code(status.getCode()).message(status.getMessage()).build();
     }
 
     public ResponseBody(ResponseMessageEnum error) {
-        this.status = ResponseStatus.builder().code(error.code()).errorCode(error.getStatus().toString()).errorMessage(error.getMessage()).build();
+        this.status = ResponseStatus.builder().code(error.code()).message(error.getMessage()).build();
     }
 }

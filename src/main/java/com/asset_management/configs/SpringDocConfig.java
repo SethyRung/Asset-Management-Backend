@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.servers.Server;
         ),
         servers = {
                 @Server(
-                        description = "Local",
                         url = "${application.server-url}"
                 ),
         },
@@ -34,6 +33,4 @@ import io.swagger.v3.oas.annotations.servers.Server;
         bearerFormat = "JWT",
         in = SecuritySchemeIn.HEADER
 )
-public class SpringDocConfig {
-
-}
+public class SpringDocConfig {}

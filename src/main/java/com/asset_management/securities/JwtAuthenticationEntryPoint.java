@@ -27,7 +27,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     private String createErrorBody(AuthenticationException authenticationException) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         ResponseStatus responseStatus = ResponseStatus.builder().code(ResponseMessageEnum.UNAUTHORIZED.getCode())
-                .errorMessage(ResponseMessageEnum.UNAUTHORIZED.getMessage()).build();
+                .message(ResponseMessageEnum.UNAUTHORIZED.getMessage()).build();
         ResponseBody<?> responseBody = new ResponseBody<>(responseStatus);
         return  objectMapper.writeValueAsString(responseBody);
     }
